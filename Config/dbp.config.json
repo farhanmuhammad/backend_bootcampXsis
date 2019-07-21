@@ -1,0 +1,10 @@
+{
+    
+    "config" :{
+    "user": "postgres",
+    "database": "DBMahasiswa", 
+    "password": "password", 
+    "port": 5432
+   
+  }
+}
