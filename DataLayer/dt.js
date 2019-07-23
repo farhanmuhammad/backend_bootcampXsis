@@ -36,8 +36,8 @@ const dt = {
                 } 
                 
                 const query = {
-                    text: 'INSERT INTO mahasiswa(kode_mahasiswa,nama_mahasiswa,alamat,kode_agama,kode_jurusan) VALUES($1,$2,$3,$4,$5)',
-                    values: [docs.kode_mahasiswa, docs.nama_mahasiswa,docs.alamat,docs.kode_agama,docs.kode_jurusan],
+                    text: 'INSERT INTO mahasiswa(kode_mahasiswa,nama_mahasiswa,alamat,kode_agama,kode_jurusan,hobby) VALUES($1,$2,$3,$4,$5,$6)',
+                    values: [docs.kode_mahasiswa, docs.nama_mahasiswa,docs.alamat,docs.kode_agama,docs.kode_jurusan,docs.hobby],
                 }
                 client.query(query,function(err,result) {
                     console.log(result)
@@ -66,8 +66,8 @@ const dt = {
                     } 
                     console.log(JSON.stringify(docs))
                     const query = {
-                        text: 'update mahasiswa set  nama_mahasiswa=($1), kode_agama=($2), alamat=($3), kode_jurusan=($4) where kode_mahasiswa=($5)',
-                        values: [docs.nama_mahasiswa,docs.kode_agama,docs.alamat,docs.kode_jurusan,docs.kode_mahasiswa],
+                        text: 'update mahasiswa set  nama_mahasiswa=($1), kode_agama=($2), alamat=($3), kode_jurusan=($4), hobby=($5) where kode_mahasiswa=($6)',
+                        values: [docs.nama_mahasiswa,docs.kode_agama,docs.alamat,docs.kode_jurusan,docs.hobby,docs.kode_mahasiswa],
                     }
                     client.query(query,function(err,result) {                        
                         done()
