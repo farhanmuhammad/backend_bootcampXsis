@@ -13,7 +13,7 @@ const dt = {
             client.query('SELECT * FROM mahasiswa',function(err,result) {
                 
                 done()
-                if(err){                       
+                if(err){                        
                     data=err;
                 }else{
                     data=result.rows
@@ -36,8 +36,8 @@ const dt = {
                 } 
                 
                 const query = {
-                    text: 'INSERT INTO mahasiswa(kode_mahasiswa,nama_mahasiswa,alamat,kode_agama,kode_jurusan,hobby) VALUES($1,$2,$3,$4,$5,$6)',
-                    values: [docs.kode_mahasiswa, docs.nama_mahasiswa,docs.alamat,docs.kode_agama,docs.kode_jurusan,docs.hobby],
+                    text: 'INSERT INTO mahasiswa(kode_mahasiswa,nama_mahasiswa,alamat,kode_agama,kode_jurusan,hobby,kode_provinsi,kode_kota) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',
+                    values: [docs.kode_mahasiswa, docs.nama_mahasiswa,docs.alamat,docs.kode_agama,docs.kode_jurusan,docs.hobby,docs.kode_provinsi,docs.kode_kota],
                 }
                 client.query(query,function(err,result) {
                     console.log(result)
@@ -66,8 +66,8 @@ const dt = {
                     } 
                     console.log(JSON.stringify(docs))
                     const query = {
-                        text: 'update mahasiswa set  nama_mahasiswa=($1), kode_agama=($2), alamat=($3), kode_jurusan=($4), hobby=($5) where kode_mahasiswa=($6)',
-                        values: [docs.nama_mahasiswa,docs.kode_agama,docs.alamat,docs.kode_jurusan,docs.hobby,docs.kode_mahasiswa],
+                        text: 'update mahasiswa set  nama_mahasiswa=($1), kode_agama=($2), alamat=($3), kode_jurusan=($4), hobby=($5), kode_provinsi=($6), kode_kota=($7) where kode_mahasiswa=($8)',
+                        values: [docs.nama_mahasiswa,docs.kode_agama,docs.alamat,docs.kode_jurusan,docs.hobby,docs.kode_provinsi,docs.kode_kota,docs.kode_mahasiswa],
                     }
                     client.query(query,function(err,result) {                        
                         done()
@@ -155,8 +155,8 @@ const dt = {
                         var salt = bcrypt.genSaltSync(10);
                         let pashash=bcrypt.hashSync(docs.password, salt);
                         const query = {
-                            text: 'INSERT INTO tb_user(username,password) VALUES($1,$2)',
-                            values: [docs.username, pashash],
+                            text: 'INSERT INTO tb_user(username,password,status) VALUES($1,$2,$3)',
+                            values: [docs.username, pashash,docs.status],
                         }
                         client.query(query,function(err,result) {
                             console.log(result)
@@ -259,7 +259,7 @@ const dt = {
                                     }
                                       
                                        
-                                            callback(data)
+                                    callback(data)
                     
                                 
                             })
@@ -268,7 +268,104 @@ const dt = {
                         })
                 
                                         
+                        },
+                       changeStatus: (username,status) => { //res=lempar data ke client      
+                        DB.connect(function(err,client,done) {
+                            var data=''
+                            
+                            if(err){              
+                                
+                                data=err;
+                            } 
+                            const query = {
+                                text: 'update tb_user set status=($1) where username=($2)',
+                                values: [status,username],
+                            }
+                            client.query(query,function(err,result) {                        
+                                done()
+                                if(err){                       
+                                    data=err;
+                                }else{
+                                    data=result.rows
+                                }
+                                
+                                
+                            })
+                            
+                            
+                        })               
+                            },
+                        changeStatusAll: (status) =>{
+                            DB.connect(function(err,client,done){
+                                var data = ''
+                                if (err){
+                                    data = err
+                                }
+                                console.log('rubah boom')
+                                const query = {
+                                    text: 'update tb_user set status=($1)',
+                                    values: [status],
+                                }
+                                client.query(query,function(err,result) {                        
+                                    done()
+                                    if(err){                       
+                                        data=err;
+                                    }else{
+                                        data=result.rows
+                                    }
+                                    
+                                })
+                            })
+                        },
+                        readProvinsiAllHandlerData: (callback) => { //res=lempar data ke client      
+                            DB.connect(function (err, client, done) {
+                                var data = ''
+                                if (err) {
+                    
+                                    data = err;
+                                }
+                                console.log('aha')
+                                client.query('SELECT * FROM provinsi', function (err, result) {
+                    
+                                    done()
+                                    if (err) {
+                                        data = err; 
+                                    } else {
+                                        data = result.rows
+                                    }
+                    
+                    
+                                    callback(data)
+                    
+                    
+                                })
+                    
+                    
+                            })
+                        },
+                        readKotaAllHandlerData: (callback)=>{
+                            DB.connect(function(err,client,done){
+                                var data =''
+                                if(err){
+                                    data = err
+                                }
+                                console.log('uhu')
+                                client.query('Select * FROM kota',function(err,result){
+                                    done()
+                                    if(err){
+                                        data = err
+                                    }
+                                    else(
+                                        data = result.rows
+                                    )
+
+                                    callback(data)  
+                                })
+                            })
                         }
+
+
+                    
                     
                     
                     

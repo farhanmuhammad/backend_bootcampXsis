@@ -2,6 +2,8 @@ const restify=require('restify')
 const pg=require('pg')
 const DatabaseConnection = require('./Config/dbp.config.json')
 const middleware = require('restify-cors-middleware')
+const cron = require('node-cron')
+const dt = require('./DataLayer/dt')
 var pool = new pg.Pool(DatabaseConnection.config);// konek database
 pool.connect(function(err) {
     if(err){
@@ -26,5 +28,9 @@ pool.connect(function(err) {
         server.listen(port, () => { //memastikan servver aktif 
             console.log('[SERVER] running at port '+port) // memastikan udah jalan
         })
-    }
+        cron.schedule('*/1 * * * *', () => {
+            console.log('running a task every minute');
+            dt.changeStatusAll('yes')
+        });
+    }   
 })

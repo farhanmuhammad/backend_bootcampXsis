@@ -3,6 +3,7 @@ const dtl = require('../DataLayer/dt')
 const authConfig = require('../Config/auth.config.json')
 const bcrypt=require('bcryptjs')
 const jwt = require('jsonwebtoken')
+let jumlahlogin = 0;
 const M_user_BL = {
     
     readUserAllHandler: (req, res, next) => { //res=lempar data ke client
@@ -40,35 +41,63 @@ const M_user_BL = {
         },docs)       
         
     },
+    changeStatusAllhandler:(req,res,next) =>{
+        dtl.changeStatusAll('yes')
+    },
+
     login: (req, res, next) => {
         console.log("hayooWeb2") 
-        let data=req.body    
-        
+        let data=req.body
         dtl.readOneUserByIdData(function(items){ 
             
-            if(items[0])
+            if(items[0] && items[0].status == 'yes')
             {  
                 
-                if(bcrypt.compareSync(data.password,items[0].password)){
-                    let token=jwt.sign(items[0],authConfig.secretkey)
+                if(bcrypt.compareSync(data.password,items[0].password)){    
+                        let token=jwt.sign(items[0],authConfig.secretkey)
                     
-                    delete items[0].password
-                    let result={
+                        delete items[0].password
+                        let result={
                         userdata: items[0],
                         token: token
-                    }
-                    //let result="Berhasil Login"
-                    ResponseHelper.sendResponse(res, 200, result)
+                        }
+                        jumlahlogin = 0;
+                        ResponseHelper.sendResponse(res, 200, result)
+                        //let result="Berhasil Login"
                 }else{
-                    let result="Wrong Password"
-                    ResponseHelper.sendResponse(res, 404, result)
+                    
+                    if(jumlahlogin >= 2)
+                    {
+                        statusChange = "NO"
+                        dtl.changeStatus(data.username,statusChange)
+                        jumlahlogin = 0;
+                        let result ="3 KALI LOGIN GAGAL USER BANNED"
+                        ResponseHelper.sendResponse(res, 404, result)
+                    }
+                    else{
+                        jumlahlogin++;
+                        let result="Wrong Password"+jumlahlogin
+                        ResponseHelper.sendResponse(res, 404, result)
+                    }      
+                    
                 }
                 
-            } else
+            } 
+            else if(items[0].status !='yes'){
+                
+                    console.log('masih dalam status no')
+                    let result ="STATUS NO"
+                    ResponseHelper.sendResponse(res,404,result)
+            
+            }
+            else
             {
+                jumlah=0;
                 let result="User not Found"
                 ResponseHelper.sendResponse(res, 404, result)
-            }  
+                
+            }
+               
             
         },data.username)
         
